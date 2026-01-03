@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+
+@theme {
+  --font-sans: var(--font-outfit);
+  --color-brand: #00e5ff;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --accent: #00e5ff;
+  --accent-muted: rgba(0, 229, 255, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #e8eceb;
+    --foreground: #2d3e4e;
+    --accent: #00e5ff;
+    --accent-muted: rgba(0, 229, 255, 0.05);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+
+
+
+/* Smooth Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-element::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent);
+  animation: shimmer 2s infinite;
+}
