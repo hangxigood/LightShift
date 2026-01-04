@@ -151,12 +151,13 @@ export const useStore = create<AppState>()(
             },
 
             setSelectedStaffId: (id: string | null) => {
-                console.log('Selected staff ID:', id);
-                set({ selectedStaffId: id });
+                // Clear shift selection when selecting staff (mutual exclusivity per PRD)
+                set({ selectedStaffId: id, selectedShiftId: null });
             },
 
             setSelectedShiftId: (id: string | null) => {
-                set({ selectedShiftId: id });
+                // Clear staff selection when selecting shift (mutual exclusivity per PRD)
+                set({ selectedShiftId: id, selectedStaffId: null });
             },
 
             setDeletingStaffId: (id: string | null) => {

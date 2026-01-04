@@ -175,21 +175,57 @@ export const CalendarWrapper: React.FC = () => {
         const staffId = eventInfo.event.extendedProps.staffId as string;
         const isDeleting = deletingStaffId === staffId;
 
-        // Calculate duration
-        const duration = eventInfo.event.start && eventInfo.event.end
-            ? calculateDuration(eventInfo.event.start, eventInfo.event.end)
-            : '';
+        // Calculate duration and time range
+        const start = eventInfo.event.start;
+        const end = eventInfo.event.end;
+
+        const duration = start && end ? calculateDuration(start, end) : '';
+
+        const formatTime = (date: Date) => {
+            return date.toLocaleTimeString([], {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        };
+
+        const formatTimeShort = (date: Date) => {
+            return date.toLocaleTimeString([], {
+                hour: 'numeric',
+                hour12: true
+            });
+        };
+
+        const timeRange = start && end ? `${formatTime(start)} - ${formatTime(end)}` : '';
+        const timeRangeShort = start && end ? `${formatTimeShort(start)}-${formatTimeShort(end)}` : '';
 
         return (
-            <div className={`fc-event-main-frame ${isDeleting ? 'is-deleting' : ''}`}>
-                <div className="fc-event-title-container">
-                    <div className="fc-event-title">{eventInfo.event.title}</div>
+            <div
+                className={`fc-event-main-frame ${isDeleting ? 'is-deleting' : ''} p-1`}
+                title={`${eventInfo.event.title}\n${timeRange}\n${duration}`}
+            >
+                <div className="fc-event-title-container flex flex-col h-full justify-between overflow-hidden">
+                    <div className="min-w-0">
+                        <div className="fc-event-title font-bold leading-tight truncate">{eventInfo.event.title}</div>
+                        {timeRange && (
+                            <>
+                                {/* Full time range - hidden when too narrow */}
+                                <div className="fc-event-time-full text-[10px] opacity-90 leading-tight whitespace-nowrap">
+                                    {timeRange}
+                                </div>
+                                {/* Short time range - shown when narrow */}
+                                <div className="fc-event-time-short text-[9px] opacity-90 leading-tight whitespace-nowrap">
+                                    {timeRangeShort}
+                                </div>
+                                {/* Ultra-compact - just duration badge */}
+                                <div className="fc-event-time-compact text-[8px] opacity-90 leading-tight">
+                                    {duration}
+                                </div>
+                            </>
+                        )}
+                    </div>
                     {duration && (
-                        <div className="fc-event-duration" style={{
-                            fontSize: '0.75em',
-                            opacity: 0.9,
-                            marginTop: '2px'
-                        }}>
+                        <div className="fc-event-duration-badge text-[10px] bg-black/10 px-1 rounded self-start mt-1 whitespace-nowrap">
                             {duration}
                         </div>
                     )}
@@ -201,6 +237,75 @@ export const CalendarWrapper: React.FC = () => {
     return (
         <div data-testid="calendar-wrapper" id="calendar-root" className="h-full relative">
             <style jsx global>{`
+                /* Responsive time display based on event width */
+                .fc-event-time-full {
+                    display: block;
+                }
+                .fc-event-time-short {
+                    display: none;
+                }
+                .fc-event-time-compact {
+                    display: none;
+                }
+                .fc-event-duration-badge {
+                    display: block;
+                }
+
+                /* When event is narrow (< 80px), hide full time and show short */
+                .fc-timegrid-event {
+                    min-width: 0 !important;
+                }
+                
+                .fc-timegrid-event.fc-event-mirror,
+                .fc-timegrid-event {
+                    overflow: visible !important;
+                }
+
+                /* Medium width: show abbreviated time */
+                @container (max-width: 100px) {
+                    .fc-event-time-full {
+                        display: none !important;
+                    }
+                    .fc-event-time-short {
+                        display: block !important;
+                    }
+                    .fc-event-duration-badge {
+                        display: none !important;
+                    }
+                }
+
+                /* Very narrow: show only compact duration */
+                @container (max-width: 60px) {
+                    .fc-event-time-full {
+                        display: none !important;
+                    }
+                    .fc-event-time-short {
+                        display: none !important;
+                    }
+                    .fc-event-time-compact {
+                        display: block !important;
+                    }
+                    .fc-event-duration-badge {
+                        display: none !important;
+                    }
+                }
+
+                /* Ultra narrow: hide all time text, rely on tooltip */
+                @container (max-width: 40px) {
+                    .fc-event-time-full,
+                    .fc-event-time-short,
+                    .fc-event-time-compact,
+                    .fc-event-duration-badge {
+                        display: none !important;
+                    }
+                }
+
+                /* Enable container queries on event elements */
+                .fc-timegrid-event-harness,
+                .fc-daygrid-event-harness {
+                    container-type: inline-size;
+                }
+
                 .selected-shift {
                     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 0 0 2px black !important;
                     z-index: 20 !important;

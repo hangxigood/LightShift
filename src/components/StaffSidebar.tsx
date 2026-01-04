@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { downloadCalendarSnapshot } from '../lib/services/exportService';
 import { Staff } from '@/types';
+import { ExportControls } from './ExportControls';
+import { getWeeklyStats } from '@/lib/utils/calendarUtils';
 
 export const StaffSidebar: React.FC = () => {
-    const { staff, deleteStaff, getDeleteStaffCount, updateStaff, addStaff, selectedStaffId, setSelectedStaffId, setSelectedShiftId, setDeletingStaffId, clearAllSelections } = useStore();
+    const { staff, shifts, deleteStaff, getDeleteStaffCount, updateStaff, addStaff, selectedStaffId, setSelectedStaffId, setSelectedShiftId, setDeletingStaffId, clearAllSelections } = useStore();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -87,14 +88,6 @@ export const StaffSidebar: React.FC = () => {
                 </div>
             </div>
 
-            {/* Export Button */}
-            <button
-                data-testid="export-button"
-                onClick={downloadCalendarSnapshot}
-                className="w-full mb-6 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
-            >
-                📸 Export Calendar
-            </button>
 
             {/* Staff List */}
             <div
@@ -105,91 +98,98 @@ export const StaffSidebar: React.FC = () => {
                     Staff ({staff.length})
                 </h2>
                 <ul data-testid="staff-list" className="space-y-2">
-                    {staff.map((staffMember) => (
-                        <li
-                            key={staffMember.id}
-                            className={`rounded-lg p-3 border transition-all cursor-pointer ${selectedStaffId === staffMember.id
-                                ? 'bg-blue-50 border-blue-400 ring-1 ring-blue-400'
-                                : 'bg-gray-50 border-gray-200 hover:border-blue-200'
-                                }`}
-                            onClick={() => handleNameClick(staffMember)}
-                        >
-                            <div className="flex items-center gap-2">
-                                <div
-                                    className="w-4 h-4 rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: staffMember.color }}
-                                />
-                                {editingId === staffMember.id ? (
-                                    <input
-                                        data-testid="edit-staff-input"
-                                        type="text"
-                                        value={editValue}
-                                        onChange={(e) => setEditValue(e.target.value)}
-                                        onKeyDown={(e) => handleEditKeyDown(e, staffMember.id)}
-                                        onBlur={() => setEditingId(null)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        autoFocus
+                    {staff.map((staffMember) => {
+                        const weeklyStats = getWeeklyStats(staffMember.id, shifts);
+
+                        return (
+                            <li
+                                key={staffMember.id}
+                                className={`rounded-lg p-3 border transition-all cursor-pointer ${selectedStaffId === staffMember.id
+                                    ? 'bg-blue-50 border-blue-400 ring-1 ring-blue-400'
+                                    : 'bg-gray-50 border-gray-200 hover:border-blue-200'
+                                    }`}
+                                onClick={() => handleNameClick(staffMember)}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className="w-4 h-4 rounded-full flex-shrink-0"
+                                        style={{ backgroundColor: staffMember.color }}
                                     />
-                                ) : (
-                                    <span
-                                        className="flex-1 font-medium text-gray-900"
+                                    {editingId === staffMember.id ? (
+                                        <input
+                                            data-testid="edit-staff-input"
+                                            type="text"
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                            onKeyDown={(e) => handleEditKeyDown(e, staffMember.id)}
+                                            onBlur={() => setEditingId(null)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-medium text-gray-900 block">
+                                                {staffMember.name}
+                                            </span>
+                                            <span className="text-xs text-gray-500">
+                                                {weeklyStats.count} shift{weeklyStats.count !== 1 ? 's' : ''} · {weeklyStats.hours}h this week
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={(e) => handleEditClick(e, staffMember)}
+                                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                        title="Edit Name"
                                     >
-                                        {staffMember.name}
-                                    </span>
-                                )}
+                                        ✏️
+                                    </button>
 
-                                <button
-                                    onClick={(e) => handleEditClick(e, staffMember)}
-                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                                    title="Edit Name"
-                                >
-                                    ✏️
-                                </button>
-
-                                <button
-                                    data-testid="delete-staff-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteClick(staffMember.id);
-                                    }}
-                                    onMouseEnter={() => !deleteConfirmId && setDeletingStaffId(staffMember.id)}
-                                    onMouseLeave={() => !deleteConfirmId && setDeletingStaffId(null)}
-                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                >
-                                    🗑️
-                                </button>
-                            </div>
-
-                            {deleteConfirmId === staffMember.id && (
-                                <div data-testid="delete-confirmation" className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
-                                    <p className="text-sm text-red-800 mb-2">
-                                        {getDeleteStaffCount(staffMember.id)} shifts will be removed
-                                    </p>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleConfirmDelete(staffMember.id);
-                                            }}
-                                            className="flex-1 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-                                        >
-                                            Confirm
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleCancelDelete();
-                                            }}
-                                            className="flex-1 px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
+                                    <button
+                                        data-testid="delete-staff-button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteClick(staffMember.id);
+                                        }}
+                                        onMouseEnter={() => !deleteConfirmId && setDeletingStaffId(staffMember.id)}
+                                        onMouseLeave={() => !deleteConfirmId && setDeletingStaffId(null)}
+                                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                    >
+                                        🗑️
+                                    </button>
                                 </div>
-                            )}
-                        </li>
-                    ))}
+
+                                {deleteConfirmId === staffMember.id && (
+                                    <div data-testid="delete-confirmation" className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                                        <p className="text-sm text-red-800 mb-2">
+                                            {getDeleteStaffCount(staffMember.id)} shifts will be removed
+                                        </p>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleConfirmDelete(staffMember.id);
+                                                }}
+                                                className="flex-1 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                                            >
+                                                Confirm
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleCancelDelete();
+                                                }}
+                                                className="flex-1 px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
                 {staff.length === 0 && (
                     <p className="text-gray-500 text-sm text-center mt-4">
@@ -197,6 +197,9 @@ export const StaffSidebar: React.FC = () => {
                     </p>
                 )}
             </div>
+
+            {/* Share & Export Section */}
+            <ExportControls />
         </aside>
     );
 };

@@ -69,3 +69,59 @@ export const getNextColor = (existingStaff: Array<{ color: string }>): string =>
     const hue = (index * 137.508) % 360; // Golden angle for better distribution
     return `hsl(${Math.floor(hue)}, 70%, 50%)`;
 };
+
+/**
+ * Gets the start and end of the current week (Sunday to Saturday)
+ * @returns Object with weekStart and weekEnd dates
+ */
+export const getCurrentWeekRange = (): { weekStart: Date; weekEnd: Date } => {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Calculate start of week (Sunday at 00:00:00)
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - dayOfWeek);
+    weekStart.setHours(0, 0, 0, 0);
+
+    // Calculate end of week (Saturday at 23:59:59)
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    return { weekStart, weekEnd };
+};
+
+/**
+ * Calculates weekly statistics for a staff member
+ * @param staffId - The staff member's ID
+ * @param shifts - Array of all shifts
+ * @returns Object with shift count and total hours for the current week
+ */
+export const getWeeklyStats = (staffId: string, shifts: Shift[]): { count: number; hours: number } => {
+    const { weekStart, weekEnd } = getCurrentWeekRange();
+
+    // Filter shifts for this staff member within the current week
+    const weeklyShifts = shifts.filter(shift => {
+        if (shift.staffId !== staffId) return false;
+
+        const shiftStart = new Date(shift.start);
+        const shiftEnd = new Date(shift.end);
+
+        // Check if shift overlaps with current week
+        return shiftStart <= weekEnd && shiftEnd >= weekStart;
+    });
+
+    // Calculate total hours
+    const totalHours = weeklyShifts.reduce((sum, shift) => {
+        const shiftStart = new Date(shift.start);
+        const shiftEnd = new Date(shift.end);
+        const durationMs = shiftEnd.getTime() - shiftStart.getTime();
+        const hours = durationMs / (1000 * 60 * 60); // Convert ms to hours
+        return sum + hours;
+    }, 0);
+
+    return {
+        count: weeklyShifts.length,
+        hours: Math.round(totalHours * 10) / 10 // Round to 1 decimal place
+    };
+};
