@@ -96,9 +96,38 @@ export const CalendarWrapper: React.FC = () => {
         };
     });
 
-    // Handle event click for selection
+    // Track click timing for double-click detection
+    const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const lastClickedIdRef = useRef<string | null>(null);
+
+    // Handle event click for selection and double-click for deletion
     const handleEventClick = (clickInfo: any) => {
-        setSelectedShiftId(clickInfo.event.id === selectedShiftId ? null : clickInfo.event.id);
+        const eventId = clickInfo.event.id;
+
+        // Check if this is a double-click (same event clicked within 300ms)
+        if (clickTimerRef.current && lastClickedIdRef.current === eventId) {
+            // Double-click detected - delete the shift
+            clearTimeout(clickTimerRef.current);
+            clickTimerRef.current = null;
+            lastClickedIdRef.current = null;
+
+            if (confirm('Delete this shift?')) {
+                useStore.getState().deleteShift(eventId);
+                setSelectedShiftId(null);
+            }
+        } else {
+            // Single click - select/deselect the shift
+            if (clickTimerRef.current) {
+                clearTimeout(clickTimerRef.current);
+            }
+
+            lastClickedIdRef.current = eventId;
+            clickTimerRef.current = setTimeout(() => {
+                setSelectedShiftId(eventId === selectedShiftId ? null : eventId);
+                clickTimerRef.current = null;
+                lastClickedIdRef.current = null;
+            }, 300);
+        }
     };
 
     // Handle event drop (drag and drop)

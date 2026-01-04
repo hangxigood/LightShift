@@ -25,6 +25,7 @@
 - **Task Selection & Deletion:**
     - **Single Task Selection:** Users can click on any shift block to select it. The selected shift should have a distinct visual indicator (e.g., highlighted border, elevated shadow, or selection outline).
     - **Keyboard Deletion:** When a task is selected, users can press the **Delete** or **Backspace** key to remove it.
+    - **Double-Click Deletion:** Users can double-click on any shift block to delete it directly. A confirmation dialog will appear to prevent accidental deletions.
     - **Deselection:** Clicking elsewhere on the calendar or pressing **Escape** should deselect the current task.
 - **Selection Behavior (Mutual Exclusivity):**
     - **Task Selection vs. Staff Filtering:** These two selection modes are mutually exclusive:
@@ -108,7 +109,7 @@
     - High-resolution image capture of the calendar.
     - Staff Management sidebar (Edit/Delete staff).
     - **Staff Filtering:** Selecting a staff member in the sidebar filters the calendar to show only that staff member's tasks, enabling focused workload management.
-    - **Task Selection & Keyboard Deletion:** Users can select individual shifts and delete them using keyboard shortcuts (Delete/Backspace keys) for faster task management.
+    - **Task Selection & Deletion:** Users can select individual shifts and delete them using either keyboard shortcuts (Delete/Backspace keys) or by double-clicking on the shift for faster task management.
 
 ### Phase 3: Premium Features (Income Generation)
 - **Goal:** Monetization via advanced integrations.
