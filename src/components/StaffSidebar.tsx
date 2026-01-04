@@ -7,7 +7,7 @@ import { ExportControls } from './ExportControls';
 import { getWeeklyStats } from '@/lib/utils/calendarUtils';
 
 export const StaffSidebar: React.FC = () => {
-    const { staff, shifts, deleteStaff, getDeleteStaffCount, updateStaff, addStaff, selectedStaffId, setSelectedStaffId, setSelectedShiftId, setDeletingStaffId, clearAllSelections } = useStore();
+    const { staff, shifts, currentViewDate, deleteStaff, getDeleteStaffCount, updateStaff, addStaff, selectedStaffId, setSelectedStaffId, setSelectedShiftId, setDeletingStaffId, clearAllSelections } = useStore();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -99,7 +99,7 @@ export const StaffSidebar: React.FC = () => {
                 </h2>
                 <ul data-testid="staff-list" className="space-y-2">
                     {staff.map((staffMember) => {
-                        const weeklyStats = getWeeklyStats(staffMember.id, shifts);
+                        const weeklyStats = getWeeklyStats(staffMember.id, shifts, currentViewDate);
 
                         return (
                             <li

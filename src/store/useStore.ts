@@ -27,6 +27,7 @@ interface AppState {
     selectedStaffId: string | null;
     selectedShiftId: string | null;
     deletingStaffId: string | null;
+    currentViewDate: Date; // Track the currently visible week in the calendar
 
     // Staff Actions
     addStaff: (name: string) => Staff;
@@ -48,6 +49,9 @@ interface AppState {
     setSelectedShiftId: (id: string | null) => void;
     setDeletingStaffId: (id: string | null) => void;
     clearAllSelections: () => void;
+
+    // View Actions
+    setCurrentViewDate: (date: Date) => void;
 }
 
 // Helper to generate UUID
@@ -67,6 +71,7 @@ export const useStore = create<AppState>()(
             selectedStaffId: null,
             selectedShiftId: null,
             deletingStaffId: null,
+            currentViewDate: new Date(),
 
             addStaff: (name: string) => {
                 const state = get();
@@ -166,6 +171,10 @@ export const useStore = create<AppState>()(
 
             clearAllSelections: () => {
                 set({ selectedStaffId: null, selectedShiftId: null, deletingStaffId: null });
+            },
+
+            setCurrentViewDate: (date: Date) => {
+                set({ currentViewDate: date });
             },
 
             addShiftWithValidation: (staffName: string, start: string, end: string) => {

@@ -71,16 +71,17 @@ export const getNextColor = (existingStaff: Array<{ color: string }>): string =>
 };
 
 /**
- * Gets the start and end of the current week (Sunday to Saturday)
+ * Gets the start and end of a week (Sunday to Saturday) for a given date
+ * @param referenceDate - Optional date to calculate week range for (defaults to today)
  * @returns Object with weekStart and weekEnd dates
  */
-export const getCurrentWeekRange = (): { weekStart: Date; weekEnd: Date } => {
-    const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+export const getWeekRange = (referenceDate?: Date): { weekStart: Date; weekEnd: Date } => {
+    const date = referenceDate || new Date();
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
 
     // Calculate start of week (Sunday at 00:00:00)
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - dayOfWeek);
+    const weekStart = new Date(date);
+    weekStart.setDate(date.getDate() - dayOfWeek);
     weekStart.setHours(0, 0, 0, 0);
 
     // Calculate end of week (Saturday at 23:59:59)
@@ -95,19 +96,20 @@ export const getCurrentWeekRange = (): { weekStart: Date; weekEnd: Date } => {
  * Calculates weekly statistics for a staff member
  * @param staffId - The staff member's ID
  * @param shifts - Array of all shifts
- * @returns Object with shift count and total hours for the current week
+ * @param referenceDate - Optional date to calculate stats for (defaults to current week)
+ * @returns Object with shift count and total hours for the specified week
  */
-export const getWeeklyStats = (staffId: string, shifts: Shift[]): { count: number; hours: number } => {
-    const { weekStart, weekEnd } = getCurrentWeekRange();
+export const getWeeklyStats = (staffId: string, shifts: Shift[], referenceDate?: Date): { count: number; hours: number } => {
+    const { weekStart, weekEnd } = getWeekRange(referenceDate);
 
-    // Filter shifts for this staff member within the current week
+    // Filter shifts for this staff member within the specified week
     const weeklyShifts = shifts.filter(shift => {
         if (shift.staffId !== staffId) return false;
 
         const shiftStart = new Date(shift.start);
         const shiftEnd = new Date(shift.end);
 
-        // Check if shift overlaps with current week
+        // Check if shift overlaps with the week
         return shiftStart <= weekEnd && shiftEnd >= weekStart;
     });
 

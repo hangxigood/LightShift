@@ -22,7 +22,8 @@ export const CalendarWrapper: React.FC = () => {
         updateShiftWithValidation,
         addShiftWithValidation,
         setSelectedShiftId,
-        clearAllSelections
+        clearAllSelections,
+        setCurrentViewDate
     } = useStore();
     const calendarRef = useRef<FullCalendar>(null);
 
@@ -34,6 +35,10 @@ export const CalendarWrapper: React.FC = () => {
 
     const handleDatesSet = (arg: any) => {
         setViewType(arg.view.type);
+        // Update the current view date to track the visible week
+        if (arg.view.currentStart) {
+            setCurrentViewDate(new Date(arg.view.currentStart));
+        }
     };
     const handleModalClose = () => {
         setIsModalOpen(false);
