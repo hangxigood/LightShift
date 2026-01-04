@@ -8,7 +8,7 @@ export const ExportControls: React.FC = () => {
     const [isSharing, setIsSharing] = useState(false);
 
     return (
-        <div className="mt-6 pt-6 border-t border-gray-100 space-y-2">
+        <div className="mt-6 pt-6 border-t border-gray-100 space-y-2" data-tutorial="export-controls">
             <div className="flex gap-2">
                 <button
                     data-testid="share-button"

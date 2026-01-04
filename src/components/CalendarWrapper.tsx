@@ -269,7 +269,7 @@ export const CalendarWrapper: React.FC = () => {
     };
 
     return (
-        <div data-testid="calendar-wrapper" id="calendar-root" className="h-full relative">
+        <div data-testid="calendar-wrapper" data-tutorial="calendar" id="calendar-root" className="h-full relative">
             <style jsx global>{`
                 /* Responsive time display based on event width */
                 .fc-event-time-full {

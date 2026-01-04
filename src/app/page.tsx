@@ -2,10 +2,20 @@
 
 import { CalendarWrapper } from '@/components/CalendarWrapper';
 import { StaffSidebar } from '@/components/StaffSidebar';
+import { TutorialManager } from '@/components/tutorial/TutorialManager';
 import { useStore } from '@/store/useStore';
+import { isFirstTimeUser } from '@/lib/utils/tutorialHelpers';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const { clearAllSelections } = useStore();
+  const { clearAllSelections, setShowWelcome, tutorialCompleted } = useStore();
+
+  // Check for first-time user on mount
+  useEffect(() => {
+    if (isFirstTimeUser() && !tutorialCompleted) {
+      setShowWelcome(true);
+    }
+  }, [setShowWelcome, tutorialCompleted]);
 
   const handleGlobalClick = (e: React.MouseEvent) => {
     // If the user clicks directly on the main flex container or padded areas
@@ -32,6 +42,9 @@ export default function Home() {
       >
         <CalendarWrapper />
       </div>
+
+      {/* Tutorial System */}
+      <TutorialManager />
     </div>
   );
 }

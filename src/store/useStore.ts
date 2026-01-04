@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getNextColor, isShiftConflict } from '../lib/utils/calendarUtils';
 import { ShiftSchema } from '../lib/utils/validation';
+import { getSampleData } from '../lib/utils/tutorialHelpers';
+import { getTotalSteps } from '../lib/config/tutorialSteps';
 
 // ... (types and generateId helper remain the same)
 
@@ -29,6 +31,13 @@ interface AppState {
     deletingStaffId: string | null;
     currentViewDate: Date; // Track the currently visible week in the calendar
 
+    // Tutorial State
+    tutorialActive: boolean;
+    tutorialStep: number;
+    tutorialCompleted: boolean;
+    showWelcome: boolean;
+    sampleDataLoaded: boolean;
+
     // Staff Actions
     addStaff: (name: string) => Staff;
     updateStaff: (id: string, updates: Partial<Staff>) => void;
@@ -52,6 +61,17 @@ interface AppState {
 
     // View Actions
     setCurrentViewDate: (date: Date) => void;
+
+    // Tutorial Actions
+    startTutorial: () => void;
+    nextTutorialStep: () => void;
+    previousTutorialStep: () => void;
+    skipTutorial: () => void;
+    completeTutorial: () => void;
+    resetTutorial: () => void;
+    setShowWelcome: (show: boolean) => void;
+    loadSampleData: () => void;
+    clearSampleData: () => void;
 }
 
 // Helper to generate UUID
@@ -72,6 +92,13 @@ export const useStore = create<AppState>()(
             selectedShiftId: null,
             deletingStaffId: null,
             currentViewDate: new Date(),
+
+            // Tutorial initial state
+            tutorialActive: false,
+            tutorialStep: 0,
+            tutorialCompleted: false,
+            showWelcome: false,
+            sampleDataLoaded: false,
 
             addStaff: (name: string) => {
                 const state = get();
@@ -221,6 +248,117 @@ export const useStore = create<AppState>()(
                 // Update the shift
                 get().updateShift(id, updates);
                 return { success: true };
+            },
+
+            // Tutorial Actions
+            startTutorial: () => {
+                set({
+                    tutorialActive: true,
+                    tutorialStep: 0,
+                    showWelcome: false,
+                });
+            },
+
+            nextTutorialStep: () => {
+                const state = get();
+                const totalSteps = getTotalSteps();
+                if (state.tutorialStep < totalSteps - 1) {
+                    set({ tutorialStep: state.tutorialStep + 1 });
+                } else {
+                    get().completeTutorial();
+                }
+            },
+
+            previousTutorialStep: () => {
+                const state = get();
+                if (state.tutorialStep > 0) {
+                    set({ tutorialStep: state.tutorialStep - 1 });
+                }
+            },
+
+            skipTutorial: () => {
+                set({
+                    tutorialActive: false,
+                    tutorialCompleted: true,
+                    showWelcome: false,
+                });
+                // Clear sample data if it was loaded
+                if (get().sampleDataLoaded) {
+                    get().clearSampleData();
+                }
+            },
+
+            completeTutorial: () => {
+                set({
+                    tutorialActive: false,
+                    tutorialCompleted: true,
+                    tutorialStep: 0,
+                });
+            },
+
+            resetTutorial: () => {
+                set({
+                    tutorialActive: false,
+                    tutorialStep: 0,
+                    tutorialCompleted: false,
+                    showWelcome: true,
+                });
+            },
+
+            setShowWelcome: (show: boolean) => {
+                set({ showWelcome: show });
+            },
+
+            loadSampleData: () => {
+                const state = get();
+                // Don't load if already loaded or if user has existing data
+                if (state.sampleDataLoaded || state.staff.length > 0) {
+                    return;
+                }
+
+                const sampleData = getSampleData();
+
+                // Add sample staff
+                const staffMap = new Map<string, Staff>();
+                sampleData.staff.forEach(sampleStaff => {
+                    const newStaff: Staff = {
+                        id: generateId(),
+                        name: sampleStaff.name,
+                        color: sampleStaff.color,
+                        createdAt: new Date().toISOString(),
+                    };
+                    staffMap.set(sampleStaff.name, newStaff);
+                });
+
+                // Add sample shifts
+                const newShifts: Shift[] = sampleData.shifts.map(sampleShift => {
+                    const staff = staffMap.get(sampleShift.staffName);
+                    if (!staff) return null;
+
+                    return {
+                        id: generateId(),
+                        staffId: staff.id,
+                        start: sampleShift.start,
+                        end: sampleShift.end,
+                    };
+                }).filter((shift): shift is Shift => shift !== null);
+
+                set({
+                    staff: Array.from(staffMap.values()),
+                    shifts: newShifts,
+                    sampleDataLoaded: true,
+                });
+            },
+
+            clearSampleData: () => {
+                const state = get();
+                if (state.sampleDataLoaded) {
+                    set({
+                        staff: [],
+                        shifts: [],
+                        sampleDataLoaded: false,
+                    });
+                }
             },
         }),
         {
