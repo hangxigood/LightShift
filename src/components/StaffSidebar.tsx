@@ -199,6 +199,17 @@ export const StaffSidebar: React.FC = () => {
                 )}
             </div>
 
+            {/* Buy Me a Coffee Widget */}
+            <div className="mt-4 pt-4 border-t border-gray-200 flex justify-center">
+                <a href="https://www.buymeacoffee.com/hangxi" target="_blank" rel="noopener noreferrer">
+                    <img
+                        src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                        alt="Buy Me A Coffee"
+                        style={{ height: '60px', width: '217px' }}
+                    />
+                </a>
+            </div>
+
             {/* Share & Export Section */}
             <ExportControls />
         </aside>
