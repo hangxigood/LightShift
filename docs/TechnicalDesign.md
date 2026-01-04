@@ -39,21 +39,31 @@ src/
 ├── components/
 │   ├── CalendarWrapper.tsx  # FullCalendar React Component with responsive logic
 │   ├── CreateShiftModal.tsx # Modal for adding new shifts with autocomplete
-│   ├── StaffSidebar.tsx     # Staff List UI with Inline Editing + Weekly Stats
+│   ├── StaffSidebar.tsx     # Staff List UI with Inline Editing + Weekly Stats + Donation Widget
 │   ├── ExportControls.tsx   # Share & Export functionality (Download, Copy, Share)
+│   ├── tutorial/            # Interactive Tutorial System
+│   │   ├── TutorialManager.tsx  # Main tutorial orchestrator
+│   │   ├── TutorialWelcome.tsx  # Welcome modal for first-time users
+│   │   ├── TutorialOverlay.tsx  # Dimming overlay with spotlight effect
+│   │   ├── TutorialTooltip.tsx  # Positioned tooltip with step content
+│   │   └── TutorialButton.tsx   # Floating button to restart tutorial
 │   └── __tests__/           # Component unit tests (Jest + RTL)
 ├── store/
 │   ├── useStore.ts          # Zustand Store (AppState, Actions, Persistence)
 │   └── __tests__/           # Store logic and conflict validation tests
 ├── lib/
+│   ├── config/
+│   │   └── tutorialSteps.ts # Tutorial step definitions and configuration
 │   ├── utils/
 │   │   ├── calendarUtils.ts # Scheduling Algorithms (Conflict, Color, Weekly Stats)
+│   │   ├── tutorialHelpers.ts # Tutorial utilities (first-time detection, sample data)
 │   │   ├── validation.ts    # Zod Schemas (Staff, Shift, Runtime Validation)
 │   │   └── __tests__/       # Utility function tests
 │   └── services/
 │       └── exportService.ts # Image Generation Logic (html-to-image)
 └── types/
-    └── index.ts             # Shared TypeScript Interfaces
+    ├── index.ts             # Shared TypeScript Interfaces
+    └── tutorial.ts          # Tutorial-specific type definitions
 ```
 
 ---
@@ -91,6 +101,10 @@ interface Shift {
 | **`selectedShiftId`** | ID for keyboard-based deletion focus. |
 | **`deletingStaffId`** | ID for pulsating delete-preview animation. |
 | **`currentViewDate`** | Date object tracking the currently visible week in the calendar. |
+| **`showWelcome`** | Boolean controlling welcome modal visibility for first-time users. |
+| **`tutorialActive`** | Boolean indicating if tutorial mode is currently active. |
+| **`tutorialStep`** | Current step index in the tutorial sequence. |
+| **`tutorialCompleted`** | Boolean tracking if user has completed the tutorial. |
 
 #### Key Actions
 - **`addStaff`**: Auto-assigns color from palette and creates new staff member.
@@ -102,6 +116,12 @@ interface Shift {
 - **`setSelectedShiftId`**: Sets shift selection and clears staff filter (mutual exclusivity).
 - **`setCurrentViewDate`**: Updates the visible week date for weekly statistics calculation.
 - **`clearAllSelections`**: Resets UI state for highlighting and selection.
+- **`startTutorial`**: Initializes tutorial mode with sample data (3 staff, 10 shifts).
+- **`nextTutorialStep`**: Advances to the next tutorial step.
+- **`previousTutorialStep`**: Returns to the previous tutorial step.
+- **`completeTutorial`**: Marks tutorial as completed and deactivates tutorial mode.
+- **`skipTutorial`**: Exits tutorial without completing, marks as completed.
+- **`resetTutorial`**: Resets tutorial state for replay.
 
 ---
 
@@ -117,19 +137,41 @@ interface Shift {
 - **Weekly Statistics**: Displays shift count and total hours for each staff member for the currently visible week.
 - **Dynamic Updates**: Stats automatically update when navigating between weeks or modifying shifts.
 - **Format**: Shows "X shift(s) · Y.Yh this week" below each staff member's name.
+- **Donation Widget**: Includes a Buy Me a Coffee widget positioned between the staff list and export controls, providing users with an easy way to support the project.
 
-### 4.3 Selection Behavior (Mutual Exclusivity)
+### 4.3 Interactive Tutorial System (`src/components/tutorial/`)
+- **First-Time User Detection**: Automatically detects first-time visitors using localStorage (`lightshift-has-visited`).
+- **Welcome Modal**: Greets new users with an option to start the guided tutorial or skip.
+- **8-Step Tutorial Flow**: Guides users through key features:
+  1. Welcome introduction
+  2. Adding staff members
+  3. Creating shifts via drag-and-drop
+  4. Rescheduling shifts
+  5. Filtering by staff member
+  6. Deleting shifts (click + keyboard or double-click)
+  7. Exporting schedules
+  8. Completion celebration
+- **Sample Data Generation**: Creates 3 sample staff members and 10 shifts for the current week.
+- **Visual Guidance**: 
+  - Dimming overlay with spotlight effect on target elements
+  - Positioned tooltips with step instructions
+  - Progress indicator (e.g., "Step 2 of 8")
+- **Navigation**: Users can advance, go back, skip individual steps, or exit the tutorial entirely.
+- **Replay Capability**: Floating "?" button allows users to restart the tutorial at any time.
+- **Data Attributes**: Components use `data-tutorial` attributes for element targeting.
+
+### 4.4 Selection Behavior (Mutual Exclusivity)
 - **Task vs. Staff Selection**: These two modes are mutually exclusive per PRD requirements:
   - Selecting a **shift** automatically clears any active **staff filter**.
   - Selecting a **staff member** automatically clears any selected **shift**.
 - **Rationale**: Prevents confusion and ensures a clear, single focus mode.
 
-### 4.4 Highlighting & Visual Feedback
+### 4.5 Highlighting & Visual Feedback
 - **Staff Highlight**: Dimming non-target shifts (`opacity: 0.15`, grayscale) when a staff member is selected for filtering.
 - **Pulsating Preview**: High-visibility red pulse on shifts when their owner is being deleted.
 - **Selection**: Black ring and brightness boost for the active shift.
 
-### 4.5 Export Service (`src/lib/services/exportService.ts`)
+### 4.6 Export Service (`src/lib/services/exportService.ts`)
 - Leverages `html-to-image` for compatibility with Tailwind 4's `oklch` color space.
 - Supports native sharing via `navigator.share` for mobile users.
 
@@ -151,6 +193,14 @@ Calculates shift count and total hours for a staff member within a specific week
 - **Week Range**: Uses `getWeekRange(referenceDate?)` to determine week boundaries.
 - **Overlap Detection**: Counts shifts that overlap with the target week.
 - **Hours Calculation**: Sums total duration in hours, rounded to 1 decimal place.
+
+
+### 5.4 Tutorial Sample Data Generation
+Generates realistic sample data for tutorial mode:
+- **Staff**: Creates 3 staff members (Alice Johnson, Bob Smith, Carol Davis) with distinct colors.
+- **Shifts**: Generates 10 shifts distributed across the current week (Monday-Friday).
+- **Date Calculation**: Dynamically calculates the current week's Monday and creates shifts relative to it.
+- **Realism**: Includes varied shift patterns (morning, afternoon, evening, overnight).
 
 ---
 
