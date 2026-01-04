@@ -30,6 +30,7 @@ interface AppState {
     selectedShiftId: string | null;
     deletingStaffId: string | null;
     currentViewDate: Date; // Track the currently visible week in the calendar
+    sidebarOpen: boolean; // Track sidebar visibility for mobile responsiveness
 
     // Tutorial State
     tutorialActive: boolean;
@@ -61,6 +62,8 @@ interface AppState {
 
     // View Actions
     setCurrentViewDate: (date: Date) => void;
+    toggleSidebar: () => void;
+    setSidebarOpen: (open: boolean) => void;
 
     // Tutorial Actions
     startTutorial: () => void;
@@ -92,6 +95,7 @@ export const useStore = create<AppState>()(
             selectedShiftId: null,
             deletingStaffId: null,
             currentViewDate: new Date(),
+            sidebarOpen: false, // Default to hidden for mobile-first approach
 
             // Tutorial initial state
             tutorialActive: false,
@@ -202,6 +206,15 @@ export const useStore = create<AppState>()(
 
             setCurrentViewDate: (date: Date) => {
                 set({ currentViewDate: date });
+            },
+
+            toggleSidebar: () => {
+                const state = get();
+                set({ sidebarOpen: !state.sidebarOpen });
+            },
+
+            setSidebarOpen: (open: boolean) => {
+                set({ sidebarOpen: open });
             },
 
             addShiftWithValidation: (staffName: string, start: string, end: string) => {
@@ -363,6 +376,14 @@ export const useStore = create<AppState>()(
         }),
         {
             name: 'lightshift-store',
+            partialize: (state) => ({
+                staff: state.staff,
+                shifts: state.shifts,
+                tutorialCompleted: state.tutorialCompleted,
+                sampleDataLoaded: state.sampleDataLoaded,
+                currentViewDate: state.currentViewDate,
+                // Exclude UI states: sidebarOpen, selectedStaffId, selectedShiftId, deletingStaffId, tutorialActive, tutorialStep, showWelcome
+            }),
         }
     )
 );
