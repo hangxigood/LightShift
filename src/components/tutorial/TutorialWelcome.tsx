@@ -1,10 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '@/store/useStore';
 
 export const TutorialWelcome: React.FC = () => {
     const { showWelcome, startTutorial, skipTutorial, loadSampleData } = useStore();
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Detect screen size
+    useEffect(() => {
+        const checkScreenSize = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
 
     if (!showWelcome) return null;
 
@@ -17,6 +30,78 @@ export const TutorialWelcome: React.FC = () => {
         skipTutorial();
     };
 
+    // Mobile version - suggest using desktop
+    if (isMobile) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn">
+                <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 animate-slideUp">
+                    {/* Header */}
+                    <div className="text-center mb-6">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                            Welcome to LightShift! 🌌
+                        </h1>
+                        <p className="text-lg text-gray-600 mb-4">
+                            Your staff scheduling tool
+                        </p>
+                    </div>
+
+                    {/* Mobile Notice */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div className="flex items-start gap-3">
+                            <span className="text-2xl">💻</span>
+                            <div>
+                                <h3 className="font-semibold text-gray-900 mb-1">Tutorial Best on Desktop</h3>
+                                <p className="text-sm text-gray-600">
+                                    For the best tutorial experience, we recommend using a desktop or tablet device.
+                                    You can still use LightShift on mobile - just skip the tutorial for now!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <button
+                        onClick={handleSkip}
+                        className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+                    >
+                        Get Started
+                    </button>
+                </div>
+
+                <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .animate-slideUp {
+          animation: slideUp 0.4s ease-out;
+        }
+      `}</style>
+            </div>
+        );
+    }
+
+    // Desktop version - full tutorial
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn">
             <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-8 animate-slideUp">

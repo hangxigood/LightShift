@@ -1,15 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '@/store/useStore';
 
 export const TutorialButton: React.FC = () => {
     const { tutorialActive, tutorialCompleted, resetTutorial } = useStore();
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Detect screen size
+    useEffect(() => {
+        const checkScreenSize = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
 
     // Don't show button during active tutorial
     if (tutorialActive) return null;
 
     const handleClick = () => {
+        if (isMobile) {
+            alert('📱 Tutorial is best experienced on desktop!\n\nFor the full interactive tutorial, please visit LightShift on a desktop or tablet device.');
+            return;
+        }
         resetTutorial();
     };
 
@@ -38,11 +55,11 @@ export const TutorialButton: React.FC = () => {
 
             {/* Tooltip on hover */}
             <span className="absolute bottom-full mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                {tutorialCompleted ? 'Restart Tutorial' : 'Start Tutorial'}
+                {isMobile ? 'Tutorial (Desktop Only)' : tutorialCompleted ? 'Restart Tutorial' : 'Start Tutorial'}
             </span>
 
-            {/* Pulse animation for first-time users */}
-            {!tutorialCompleted && (
+            {/* Pulse animation for first-time users (not on mobile) */}
+            {!tutorialCompleted && !isMobile && (
                 <span className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-75" />
             )}
         </button>
