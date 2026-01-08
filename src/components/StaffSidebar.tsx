@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Staff } from '@/types';
-import { ExportControls } from './ExportControls';
+import { DataManagement } from './DataManagement';
 import { getWeeklyStats } from '@/lib/utils/calendarUtils';
 
 export const StaffSidebar: React.FC = () => {
@@ -211,7 +211,7 @@ export const StaffSidebar: React.FC = () => {
             </div>
 
             {/* Share & Export Section */}
-            <ExportControls />
+            <DataManagement />
         </aside>
     );
 };

@@ -75,6 +75,10 @@ interface AppState {
     setShowWelcome: (show: boolean) => void;
     loadSampleData: () => void;
     clearSampleData: () => void;
+
+    // Data Management Actions
+    importData: (staff: Array<{ name: string; color: string }>, shifts: Array<{ staffName: string; start: string; end: string; notes?: string }>) => void;
+    clearAllData: () => void;
 }
 
 // Helper to generate UUID
@@ -372,6 +376,57 @@ export const useStore = create<AppState>()(
                         sampleDataLoaded: false,
                     });
                 }
+            },
+
+            // Data Management Actions
+            importData: (importedStaff, importedShifts) => {
+                // Create staff with new IDs
+                const staffMap = new Map<string, Staff>();
+                importedStaff.forEach(s => {
+                    const newStaff: Staff = {
+                        id: generateId(),
+                        name: s.name,
+                        color: s.color,
+                        createdAt: new Date().toISOString(),
+                    };
+                    staffMap.set(s.name, newStaff);
+                });
+
+                // Create shifts with references to new staff IDs
+                const newShifts = importedShifts.map(s => {
+                    const staff = staffMap.get(s.staffName);
+                    if (!staff) return null;
+                    const shift: Shift = {
+                        id: generateId(),
+                        staffId: staff.id,
+                        start: s.start,
+                        end: s.end,
+                    };
+                    if (s.notes) {
+                        shift.notes = s.notes;
+                    }
+                    return shift;
+                }).filter((shift): shift is Shift => shift !== null);
+
+                set({
+                    staff: Array.from(staffMap.values()),
+                    shifts: newShifts,
+                    sampleDataLoaded: false,
+                    selectedStaffId: null,
+                    selectedShiftId: null,
+                    deletingStaffId: null,
+                });
+            },
+
+            clearAllData: () => {
+                set({
+                    staff: [],
+                    shifts: [],
+                    sampleDataLoaded: false,
+                    selectedStaffId: null,
+                    selectedShiftId: null,
+                    deletingStaffId: null,
+                });
             },
         }),
         {

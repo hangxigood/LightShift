@@ -55,9 +55,9 @@ export const tutorialSteps: TutorialStep[] = [
     },
     {
         id: 'export',
-        title: 'Share Your Schedule',
-        description: 'When you\'re ready, use the export controls to save your schedule as an image. You can download it, copy to clipboard, or share directly!',
-        targetSelector: '[data-tutorial="export-controls"]',
+        title: 'Manage Your Data',
+        description: 'Use the Data Management section to export your schedule to Excel for backup, import from a previous backup, or clear all data. You can also see how much storage you\'re using!',
+        targetSelector: '[data-tutorial=\"data-management\"]',
         position: 'top',
         skipable: true,
     },
