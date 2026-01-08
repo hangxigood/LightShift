@@ -12,7 +12,7 @@
     - `@fullcalendar/daygrid`
     - `@fullcalendar/timegrid`
     - `@fullcalendar/interaction`
-- **Export:** `html-to-image` (to capture modern CSS colors and gradients)
+- **Export:** `xlsx` (SheetJS) for Excel file generation and parsing
 
 ### 1.2 System Diagram (Logical)
 ```mermaid
@@ -21,9 +21,9 @@ graph TD
     B -->|Renders| C[FullCalendar Component]
     C -->|Reads/Writes| D[Zustand Store]
     D -->|Persists| E[LocalStorage]
-    A -->|Clicks Export| F[Export Service]
-    F -->|Captures| C
-    F -->|Actions| G[Download PNG / Clipboard / Share]
+    A -->|Interacts| F[Data Management UI]
+    F -->|Triggers| G[Data Export Service]
+    G -->|Actions| H[Download .xlsx / Import .xlsx / Clear Data]
 ```
 
 ---
@@ -40,7 +40,7 @@ src/
 │   ├── CalendarWrapper.tsx  # FullCalendar React Component with responsive logic
 │   ├── CreateShiftModal.tsx # Modal for adding new shifts with autocomplete
 │   ├── StaffSidebar.tsx     # Staff List UI with Inline Editing + Weekly Stats + Donation Widget
-│   ├── ExportControls.tsx   # Share & Export functionality (Download, Copy, Share)
+│   ├── DataManagement.tsx   # Data Management UI (Storage, Export, Import, Clear)
 │   ├── tutorial/            # Interactive Tutorial System
 │   │   ├── TutorialManager.tsx  # Main tutorial orchestrator
 │   │   ├── TutorialWelcome.tsx  # Welcome modal for first-time users
@@ -60,7 +60,7 @@ src/
 │   │   ├── validation.ts    # Zod Schemas (Staff, Shift, Runtime Validation)
 │   │   └── __tests__/       # Utility function tests
 │   └── services/
-│       └── exportService.ts # Image Generation Logic (html-to-image)
+│       └── dataExportService.ts # Excel Export/Import Logic (SheetJS)
 └── types/
     ├── index.ts             # Shared TypeScript Interfaces
     └── tutorial.ts          # Tutorial-specific type definitions
@@ -116,6 +116,8 @@ interface Shift {
 - **`setSelectedShiftId`**: Sets shift selection and clears staff filter (mutual exclusivity).
 - **`setCurrentViewDate`**: Updates the visible week date for weekly statistics calculation.
 - **`clearAllSelections`**: Resets UI state for highlighting and selection.
+- **`importData`**: Replaces all staff and shift data with imported data.
+- **`clearAllData`**: Removes all staff and shift data, resets to empty state.
 - **`startTutorial`**: Initializes tutorial mode with sample data (3 staff, 10 shifts).
 - **`nextTutorialStep`**: Advances to the next tutorial step.
 - **`previousTutorialStep`**: Returns to the previous tutorial step.
@@ -129,6 +131,7 @@ interface Shift {
 
 ### 4.1 Calendar Wrapper (`src/components/CalendarWrapper.tsx`)
 - **Responsive Logic**: Uses **CSS Container Queries** (`@container`) to decide whether to show full names, durations, or empty bars based on the event's horizontal width.
+- **Enhanced Visibility**: Optimized font sizes (11px-12px) and layout for event labels, ensuring duration badges and time ranges are readable even in compact views.
 - **Drill-down**: Clicking a day in Month View automatically switches the calendar to Week View for that day.
 - **Keyboard Interaction**: Listens for `Delete` or `Backspace` to remove `selectedShiftId`.
 - **View Tracking**: Updates `currentViewDate` whenever the user navigates to a different week.
@@ -137,7 +140,7 @@ interface Shift {
 - **Weekly Statistics**: Displays shift count and total hours for each staff member for the currently visible week.
 - **Dynamic Updates**: Stats automatically update when navigating between weeks or modifying shifts.
 - **Format**: Shows "X shift(s) · Y.Yh this week" below each staff member's name.
-- **Donation Widget**: Includes a Buy Me a Coffee widget positioned between the staff list and export controls, providing users with an easy way to support the project.
+- **Donation Widget**: Includes a Buy Me a Coffee widget positioned between the staff list and data management controls, providing users with an easy way to support the project.
 
 ### 4.3 Interactive Tutorial System (`src/components/tutorial/`)
 - **First-Time User Detection**: Automatically detects first-time visitors using localStorage (`lightshift-has-visited`).
@@ -149,7 +152,7 @@ interface Shift {
   4. Rescheduling shifts
   5. Filtering by staff member
   6. Deleting shifts (click + keyboard or double-click)
-  7. Exporting schedules
+  7. Managing data (storage, export, import, clear)
   8. Completion celebration
 - **Sample Data Generation**: Creates 3 sample staff members and 10 shifts for the current week.
 - **Visual Guidance**: 
@@ -171,9 +174,14 @@ interface Shift {
 - **Pulsating Preview**: High-visibility red pulse on shifts when their owner is being deleted.
 - **Selection**: Black ring and brightness boost for the active shift.
 
-### 4.6 Export Service (`src/lib/services/exportService.ts`)
-- Leverages `html-to-image` for compatibility with Tailwind 4's `oklch` color space.
-- Supports native sharing via `navigator.share` for mobile users.
+### 4.6 Data Export Service (`src/lib/services/dataExportService.ts`)
+- Uses `xlsx` (SheetJS) library for Excel file operations.
+- **`exportToExcel(staff, shifts)`**: Creates `.xlsx` file with a Shifts sheet containing human-readable columns (Staff Name, Staff Color, Start Date, Start Time, End Date, End Time, Notes).
+- **`parseExcelImport(file)`**: Parses uploaded `.xlsx` file and returns staff/shifts arrays. 
+    - Auto-creates staff from unique names.
+    - **Robust Date Parsing**: Handles both text string dates and Excel serial number dates to support manual manual edits in Excel.
+    - **Timezone Safety**: Uses local time parsing to prevent timezone shifts when moving data between systems.
+- **`getStorageUsage()`**: Returns localStorage usage in bytes and percentage.
 
 ---
 

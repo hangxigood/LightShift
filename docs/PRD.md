@@ -62,14 +62,16 @@
 - **Local-First:** All data is saved to the browser's local storage.
 - **Session Continuity:** Users can close the tab and return later; their data remains as long as they don't clear their browser cache.
 
-### 3.5 Export & Sharing (The "Output" Module)
-- **Snapshot Mode:** One-click accessibility to distribution tools, located at the bottom of the staff management sidebar for constant availability.
-- **Format:** High-Resolution PNG.
-- **Distribution Options:**
-    - **Physical Download:** Save as a file to the device.
-    - **Native Share:** Integrated with the browser's native share sheet (Web Share API) for direct sending to messaging apps (Slack, WhatsApp, etc.).
-    - **Copy to Clipboard:** One-tap to copy the generated image for instant pasting into chats or documents.
-- **Quality:** Targeted for digital sharing (messaging apps/email) but legible if printed on standard letter paper.
+### 3.5 Data Management
+- **Storage Usage Display:** Shows how much browser localStorage is being used (e.g., "1.2 KB / 5 MB"), helping users understand their data footprint.
+- **Export to Excel:** One-click download of all schedule data as a `.xlsx` file with human-readable columns:
+    - **Shifts Sheet:** Staff Name, Staff Color, Start Date, Start Time, End Date, End Time, Notes.
+    - Users can open this in any spreadsheet application (Excel, Google Sheets) for review or backup.
+- **Import from Excel:** Upload a previously exported `.xlsx` file to restore schedule data.
+    - Staff members are auto-created from unique staff names in the file.
+    - Confirmation dialog warns before replacing existing data.
+- **Clear All Data:** A button to wipe all staff and shift data from the browser.
+    - Requires confirmation dialog to prevent accidental data loss.
 
 ## 4. User Flow
 1. **Land:** User opens the website (blank calendar).
@@ -103,10 +105,11 @@
     - Auto-creation of staff identities.
     - Drag-and-drop shift management with conflict blocking.
 
-### Phase 2: The "Visual Export" & Focus
-- **Goal:** Enable easy sharing and better management of the schedule.
+### Phase 2: Data Management & Focus
+- **Goal:** Enable easy data backup/restore and better management of the schedule.
 - **Features:**
-    - High-resolution image capture of the calendar.
+    - Storage usage display and data management controls.
+    - Excel export/import for backup and portability.
     - Staff Management sidebar (Edit/Delete staff).
     - **Staff Filtering:** Selecting a staff member in the sidebar filters the calendar to show only that staff member's tasks, enabling focused workload management.
     - **Task Selection & Deletion:** Users can select individual shifts and delete them using either keyboard shortcuts (Delete/Backspace keys) or by double-clicking on the shift for faster task management.
