@@ -140,12 +140,12 @@ export const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
             {!isCenter && (
                 <div
                     className={`absolute w-4 h-4 bg-white border-blue-500 transform rotate-45 ${tooltipPosition === 'top'
-                            ? 'bottom-[-10px] left-1/2 -translate-x-1/2 border-b-2 border-r-2'
-                            : tooltipPosition === 'bottom'
-                                ? 'top-[-10px] left-1/2 -translate-x-1/2 border-t-2 border-l-2'
-                                : tooltipPosition === 'left'
-                                    ? 'right-[-10px] top-1/2 -translate-y-1/2 border-t-2 border-r-2'
-                                    : 'left-[-10px] top-1/2 -translate-y-1/2 border-b-2 border-l-2'
+                        ? 'bottom-[-10px] left-1/2 -translate-x-1/2 border-b-2 border-r-2'
+                        : tooltipPosition === 'bottom'
+                            ? 'top-[-10px] left-1/2 -translate-x-1/2 border-t-2 border-l-2'
+                            : tooltipPosition === 'left'
+                                ? 'right-[-10px] top-1/2 -translate-y-1/2 border-t-2 border-r-2'
+                                : 'left-[-10px] top-1/2 -translate-y-1/2 border-b-2 border-l-2'
                         }`}
                 />
             )}
@@ -178,10 +178,10 @@ export const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
                         <div
                             key={index}
                             className={`h-2 rounded-full transition-all duration-300 ${index === currentStepIndex
-                                    ? 'w-8 bg-blue-600'
-                                    : index < currentStepIndex
-                                        ? 'w-2 bg-blue-400'
-                                        : 'w-2 bg-gray-300'
+                                ? 'w-8 bg-blue-600'
+                                : index < currentStepIndex
+                                    ? 'w-2 bg-blue-400'
+                                    : 'w-2 bg-gray-300'
                                 }`}
                         />
                     ))}
@@ -193,8 +193,8 @@ export const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
                         onClick={onPrevious}
                         disabled={currentStepIndex === 0}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentStepIndex === 0
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                     >
                         Previous
