@@ -88,7 +88,7 @@ export default function Home() {
 
       {/* Main Calendar Area */}
       <div
-        className="flex-1 p-6 overflow-auto"
+        className="flex-1 p-2 sm:p-4 lg:p-6 pl-14 sm:pl-4 lg:pl-6 overflow-auto"
         onClick={handleGlobalClick}
       >
         <CalendarWrapper />

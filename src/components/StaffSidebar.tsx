@@ -62,10 +62,10 @@ export const StaffSidebar: React.FC = () => {
     return (
         <aside
             data-testid="staff-sidebar"
-            className="h-full flex flex-col p-6 bg-white border-r border-gray-200 cursor-default"
+            className="h-full flex flex-col p-4 lg:p-6 bg-white border-r border-gray-200 cursor-default"
             onClick={(e) => e.target === e.currentTarget && clearAllSelections()}
         >
-            <h1 className="text-3xl font-bold mb-6 text-gray-900">LightShift</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6 text-gray-900">LightShift</h1>
 
             {/* Add Staff Section */}
             <div className="mb-6">
@@ -205,7 +205,8 @@ export const StaffSidebar: React.FC = () => {
                     <img
                         src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
                         alt="Buy Me A Coffee"
-                        style={{ height: '60px', width: '217px' }}
+                        className="h-auto max-w-full"
+                        style={{ height: '50px', maxWidth: '180px' }}
                     />
                 </a>
             </div>

@@ -61,3 +61,75 @@ body {
       transparent);
   animation: shimmer 2s infinite;
 }
+
+/* ========================================
+   RESPONSIVE FULLCALENDAR STYLES
+   ======================================== */
+
+/* Mobile: Stack toolbar and reduce sizing */
+@media (max-width: 640px) {
+  /* Stack the toolbar sections vertically */
+  .fc .fc-toolbar {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Reduce button sizes for mobile */
+  .fc .fc-button {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* Smaller title on mobile */
+  .fc .fc-toolbar-title {
+    font-size: 1rem;
+  }
+
+  /* Make navigation buttons touch-friendly */
+  .fc .fc-prev-button,
+  .fc .fc-next-button,
+  .fc .fc-today-button {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+
+  /* Reduce column header font size */
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+
+  /* Reduce time slot label size */
+  .fc .fc-timegrid-slot-label-cushion {
+    font-size: 0.65rem;
+  }
+
+  /* Compact event display */
+  .fc-event-title {
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Tablet: Minor adjustments */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .fc .fc-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.125rem;
+  }
+}
+
+/* Ensure toolbar buttons don't wrap awkwardly */
+.fc .fc-button-group {
+  flex-shrink: 0;
+}
