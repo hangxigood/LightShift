@@ -244,22 +244,22 @@ export const CalendarWrapper: React.FC = () => {
                         {timeRange && (
                             <>
                                 {/* Full time range - hidden when too narrow */}
-                                <div className="fc-event-time-full text-[10px] opacity-90 leading-tight whitespace-nowrap">
+                                <div className="fc-event-time-full text-xs opacity-90 leading-tight whitespace-nowrap">
                                     {timeRange}
                                 </div>
                                 {/* Short time range - shown when narrow */}
-                                <div className="fc-event-time-short text-[9px] opacity-90 leading-tight whitespace-nowrap">
+                                <div className="fc-event-time-short text-[11px] opacity-90 leading-tight whitespace-nowrap">
                                     {timeRangeShort}
                                 </div>
                                 {/* Ultra-compact - just duration badge */}
-                                <div className="fc-event-time-compact text-[8px] opacity-90 leading-tight">
+                                <div className="fc-event-time-compact text-[10px] opacity-90 leading-tight">
                                     {duration}
                                 </div>
                             </>
                         )}
                     </div>
                     {duration && (
-                        <div className="fc-event-duration-badge text-[10px] bg-black/10 px-1 rounded self-start mt-1 whitespace-nowrap">
+                        <div className="fc-event-duration-badge text-[11px] font-medium bg-black/10 px-1.5 py-0.5 rounded self-start mt-1 whitespace-nowrap">
                             {duration}
                         </div>
                     )}
