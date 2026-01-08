@@ -1,37 +1,58 @@
 # LightShift 🌌
 
-LightShift is a premium Next.js 16 application built with Tailwind CSS 4 and TypeScript. It features a stunning, high-contrast design system optimized for modern web experiences.
+LightShift is a minimalist, local-first staff scheduling tool designed for speed and simplicity. It allows managers to plan shifts using a visual drag-and-drop calendar without creating an account.
+
+[**👉 Try the Live Demo**](https://hangxigood.github.io/LightShift/)
 
 ## ✨ Features
 
-- **Premium Aesthetics**: Obsidian themes with ethereal cyan accents.
-- **Glassmorphism**: Built-in glass utilities for a sophisticated UI.
-- **Tailwind CSS 4**: Utilizing the latest CSS-first configuration and @theme variables.
-- **Outfit Typography**: Clean, modern headers and body text via Google Fonts.
-- **Responsive Design**: Fully optimized for all device sizes.
+- **Zero-Config Scheduling**: Start planning immediately. No sign-up required.
+- **Smart Calendar Interface**:
+  - Drag & drop shift management.
+  - Auto-creation of staff identities with unique colors.
+  - Conflict detection to prevent overlapping shifts for the same person.
+- **Local-First Data Privacy**: All data is stored securely in your browser's LocalStorage. It never leaves your device unless you choose to export it.
+- **Data Management**:
+  - **Storage Insights**: See exactly how much browser storage your schedule uses.
+  - **Excel Backup**: Export your entire schedule to a human-readable Excel file (`.xlsx`) for backup or sharing.
+  - **Restore**: Import your Excel backups to restore your schedule on any device.
+- **Interactive Tutorial**: A guided tour helps new users master the interface in seconds.
+- **Premium Aesthetics**: Built with a modern, high-contrast design system using Tailwind CSS 4.
 
 ## 🚀 Getting Started
 
-First, install the dependencies:
+### Prerequisites
 
-```bash
-npm install
-```
+- Node.js 18+ installed
 
-Then, run the development server:
+### Installation
 
-```bash
-npm run dev
-```
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/hangxigood/LightShift.git
+    cd LightShift
+    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-## 🛠️ Architecture
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
+
+4.  Open [http://localhost:3000](http://localhost:3000) with your browser to use the app.
+
+## 🛠️ Tech Stack
 
 - **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Calendar**: [FullCalendar React](https://fullcalendar.io/docs/react)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand) (with LocalStorage persistence)
+- **Data Export**: [SheetJS (xlsx)](https://sheetjs.com/)
 - **Typography**: [Google Fonts (Outfit)](https://fonts.google.com/specimen/Outfit)
-- **Icons**: Custom SVG-driven icons
 
 ---
 
