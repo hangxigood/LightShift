@@ -181,7 +181,7 @@ interface Shift {
   2. Adding staff members
   3. Creating shifts via drag-and-drop
   4. Rescheduling shifts
-  5. Filtering by staff member
+  5. Filtering by staff member + auto-assignment
   6. Deleting shifts (click + keyboard or double-click)
   7. Managing data (storage, export, import, clear)
   8. Completion celebration

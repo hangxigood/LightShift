@@ -38,8 +38,8 @@ export const tutorialSteps: TutorialStep[] = [
     },
     {
         id: 'staff-filter',
-        title: 'Filter by Staff Member',
-        description: 'Click on any staff member in the sidebar to view only their shifts. This helps you focus on individual schedules. Click again to show all shifts.',
+        title: 'Filter & Quick-Assign',
+        description: 'Click on any staff member to filter their shifts. Bonus: While a staff member is selected, drawing on the calendar auto-assigns shifts to them—no modal needed! Click again to deselect.',
         targetSelector: '[data-tutorial="staff-list"]',
         position: 'right',
         action: 'wait',
