@@ -166,6 +166,26 @@ export const CalendarWrapper: React.FC = () => {
             calendarApi.unselect();
             return;
         }
+
+        // If a staff member is selected, auto-assign the shift
+        if (selectedStaffId) {
+            const selectedStaff = staff.find(s => s.id === selectedStaffId);
+            if (selectedStaff) {
+                const result = addShiftWithValidation(
+                    selectedStaff.name,
+                    selectInfo.startStr,
+                    selectInfo.endStr
+                );
+
+                if (!result.success) {
+                    alert(result.error);
+                }
+
+                selectInfo.view.calendar.unselect();
+                return;
+            }
+        }
+
         clearAllSelections(); // Clear ALL selections when starting a new one
         setModalData(selectInfo);
         setIsModalOpen(true);

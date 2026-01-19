@@ -12,7 +12,14 @@
     - `@fullcalendar/daygrid`
     - `@fullcalendar/timegrid`
     - `@fullcalendar/interaction`
-- **Export:** `xlsx` (SheetJS) for Excel file generation and parsing
+- **Utilities:**
+    - `date-fns` - Date manipulation and formatting
+    - `lucide-react` - Icon library
+    - `clsx` & `tailwind-merge` - Conditional CSS class utilities
+- **Export & Capture:**
+    - `xlsx` (SheetJS) - Excel file generation and parsing
+    - `html-to-image` - Screenshot capture for visual exports
+- **Validation:** `zod` - Runtime schema validation
 
 ### 1.2 System Diagram (Logical)
 ```mermaid
@@ -47,6 +54,7 @@ src/
 │   │   ├── TutorialOverlay.tsx  # Dimming overlay with spotlight effect
 │   │   ├── TutorialTooltip.tsx  # Positioned tooltip with step content
 │   │   └── TutorialButton.tsx   # Floating button to restart tutorial
+│   ├── ui/                  # Reusable UI components
 │   └── __tests__/           # Component unit tests (Jest + RTL)
 ├── store/
 │   ├── useStore.ts          # Zustand Store (AppState, Actions, Persistence)
@@ -101,29 +109,51 @@ interface Shift {
 | **`selectedShiftId`** | ID for keyboard-based deletion focus. |
 | **`deletingStaffId`** | ID for pulsating delete-preview animation. |
 | **`currentViewDate`** | Date object tracking the currently visible week in the calendar. |
+| **`sidebarOpen`** | Boolean controlling sidebar visibility (mobile responsive). |
 | **`showWelcome`** | Boolean controlling welcome modal visibility for first-time users. |
 | **`tutorialActive`** | Boolean indicating if tutorial mode is currently active. |
 | **`tutorialStep`** | Current step index in the tutorial sequence. |
 | **`tutorialCompleted`** | Boolean tracking if user has completed the tutorial. |
+| **`sampleDataLoaded`** | Boolean tracking if sample tutorial data has been loaded. |
 
 #### Key Actions
+
+**Staff Management:**
 - **`addStaff`**: Auto-assigns color from palette and creates new staff member.
-- **`addShiftWithValidation`**: Checks for conflicts and enforces temporal logic (End > Start).
-- **`updateShiftWithValidation`**: Validates and updates existing shift while checking for conflicts.
+- **`updateStaff`**: Updates staff member properties (name, color).
 - **`deleteStaff`**: Performs a cascading delete (removes associated shifts).
 - **`getDeleteStaffCount`**: Returns the number of shifts that will be deleted with a staff member.
+
+**Shift Management:**
+- **`addShift`**: Adds a new shift to the calendar.
+- **`addShiftWithValidation`**: Checks for conflicts and enforces temporal logic (End > Start).
+- **`updateShift`**: Updates an existing shift.
+- **`updateShiftWithValidation`**: Validates and updates existing shift while checking for conflicts.
+- **`deleteShift`**: Removes a shift from the calendar.
+
+**Selection & UI State:**
 - **`setSelectedStaffId`**: Sets staff filter and clears shift selection (mutual exclusivity).
 - **`setSelectedShiftId`**: Sets shift selection and clears staff filter (mutual exclusivity).
-- **`setCurrentViewDate`**: Updates the visible week date for weekly statistics calculation.
+- **`setDeletingStaffId`**: Sets the staff ID for delete preview animation.
 - **`clearAllSelections`**: Resets UI state for highlighting and selection.
+- **`setCurrentViewDate`**: Updates the visible week date for weekly statistics calculation.
+- **`toggleSidebar`**: Toggles sidebar open/closed state.
+- **`setSidebarOpen`**: Explicitly sets sidebar open/closed state.
+
+**Data Management:**
 - **`importData`**: Replaces all staff and shift data with imported data.
 - **`clearAllData`**: Removes all staff and shift data, resets to empty state.
-- **`startTutorial`**: Initializes tutorial mode with sample data (3 staff, 10 shifts).
+
+**Tutorial System:**
+- **`startTutorial`**: Initializes tutorial mode.
+- **`loadSampleData`**: Loads sample data for tutorial (3 staff, 10 shifts).
+- **`clearSampleData`**: Removes sample tutorial data.
 - **`nextTutorialStep`**: Advances to the next tutorial step.
 - **`previousTutorialStep`**: Returns to the previous tutorial step.
 - **`completeTutorial`**: Marks tutorial as completed and deactivates tutorial mode.
 - **`skipTutorial`**: Exits tutorial without completing, marks as completed.
 - **`resetTutorial`**: Resets tutorial state for replay.
+- **`setShowWelcome`**: Controls welcome modal visibility.
 
 ---
 
@@ -133,6 +163,7 @@ interface Shift {
 - **Responsive Logic**: Uses **CSS Container Queries** (`@container`) to decide whether to show full names, durations, or empty bars based on the event's horizontal width.
 - **Enhanced Visibility**: Optimized font sizes (11px-12px) and layout for event labels, ensuring duration badges and time ranges are readable even in compact views.
 - **Drill-down**: Clicking a day in Month View automatically switches the calendar to Week View for that day.
+- **Auto-Assignment**: When a staff member is selected in the sidebar, drawing a new shift on the calendar automatically assigns it to that staff member without requiring manual name entry.
 - **Keyboard Interaction**: Listens for `Delete` or `Backspace` to remove `selectedShiftId`.
 - **View Tracking**: Updates `currentViewDate` whenever the user navigates to a different week.
 
