@@ -127,3 +127,58 @@ export const getWeeklyStats = (staffId: string, shifts: Shift[], referenceDate?:
         hours: Math.round(totalHours * 10) / 10 // Round to 1 decimal place
     };
 };
+
+/**
+ * Gets the start and end of a month for a given date
+ * @param referenceDate - Optional date to calculate month range for (defaults to today)
+ * @returns Object with monthStart and monthEnd dates
+ */
+export const getMonthRange = (referenceDate?: Date): { monthStart: Date; monthEnd: Date } => {
+    const date = referenceDate || new Date();
+
+    // Calculate start of month (1st day at 00:00:00)
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    // Calculate end of month (last day at 23:59:59)
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    monthEnd.setHours(23, 59, 59, 999);
+
+    return { monthStart, monthEnd };
+};
+
+/**
+ * Calculates monthly statistics for a staff member
+ * @param staffId - The staff member's ID
+ * @param shifts - Array of all shifts
+ * @param referenceDate - Optional date to calculate stats for (defaults to current month)
+ * @returns Object with shift count and total hours for the specified month
+ */
+export const getMonthlyStats = (staffId: string, shifts: Shift[], referenceDate?: Date): { count: number; hours: number } => {
+    const { monthStart, monthEnd } = getMonthRange(referenceDate);
+
+    // Filter shifts for this staff member within the specified month
+    const monthlyShifts = shifts.filter(shift => {
+        if (shift.staffId !== staffId) return false;
+
+        const shiftStart = new Date(shift.start);
+        const shiftEnd = new Date(shift.end);
+
+        // Check if shift overlaps with the month
+        return shiftStart <= monthEnd && shiftEnd >= monthStart;
+    });
+
+    // Calculate total hours
+    const totalHours = monthlyShifts.reduce((sum, shift) => {
+        const shiftStart = new Date(shift.start);
+        const shiftEnd = new Date(shift.end);
+        const durationMs = shiftEnd.getTime() - shiftStart.getTime();
+        const hours = durationMs / (1000 * 60 * 60); // Convert ms to hours
+        return sum + hours;
+    }, 0);
+
+    return {
+        count: monthlyShifts.length,
+        hours: Math.round(totalHours * 10) / 10 // Round to 1 decimal place
+    };
+};

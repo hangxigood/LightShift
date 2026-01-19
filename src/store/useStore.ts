@@ -30,6 +30,7 @@ interface AppState {
     selectedShiftId: string | null;
     deletingStaffId: string | null;
     currentViewDate: Date; // Track the currently visible week in the calendar
+    calendarViewType: string; // Track the current calendar view type (dayGridMonth, timeGridWeek, timeGridDay)
     sidebarOpen: boolean; // Track sidebar visibility for mobile responsiveness
 
     // Tutorial State
@@ -62,6 +63,7 @@ interface AppState {
 
     // View Actions
     setCurrentViewDate: (date: Date) => void;
+    setCalendarViewType: (viewType: string) => void;
     toggleSidebar: () => void;
     setSidebarOpen: (open: boolean) => void;
 
@@ -99,6 +101,7 @@ export const useStore = create<AppState>()(
             selectedShiftId: null,
             deletingStaffId: null,
             currentViewDate: new Date(),
+            calendarViewType: 'timeGridWeek', // Default to week view
             sidebarOpen: false, // Default to hidden for mobile-first approach
 
             // Tutorial initial state
@@ -210,6 +213,10 @@ export const useStore = create<AppState>()(
 
             setCurrentViewDate: (date: Date) => {
                 set({ currentViewDate: date });
+            },
+
+            setCalendarViewType: (viewType: string) => {
+                set({ calendarViewType: viewType });
             },
 
             toggleSidebar: () => {

@@ -18,7 +18,6 @@
     - `clsx` & `tailwind-merge` - Conditional CSS class utilities
 - **Export & Capture:**
     - `xlsx` (SheetJS) - Excel file generation and parsing
-    - `html-to-image` - Screenshot capture for visual exports
 - **Validation:** `zod` - Runtime schema validation
 
 ### 1.2 System Diagram (Logical)

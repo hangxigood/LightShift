@@ -19,11 +19,13 @@ export const CalendarWrapper: React.FC = () => {
         selectedStaffId,
         selectedShiftId,
         deletingStaffId,
+        calendarViewType,
         updateShiftWithValidation,
         addShiftWithValidation,
         setSelectedShiftId,
         clearAllSelections,
-        setCurrentViewDate
+        setCurrentViewDate,
+        setCalendarViewType
     } = useStore();
     const calendarRef = useRef<FullCalendar>(null);
 
@@ -31,10 +33,9 @@ export const CalendarWrapper: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState<DateSelectArg | null>(null);
     const [staffNameInput, setStaffNameInput] = useState('');
-    const [viewType, setViewType] = useState('timeGridWeek');
 
     const handleDatesSet = (arg: any) => {
-        setViewType(arg.view.type);
+        setCalendarViewType(arg.view.type);
         // Update the current view date to track the visible week
         if (arg.view.currentStart) {
             setCurrentViewDate(new Date(arg.view.currentStart));
@@ -405,9 +406,9 @@ export const CalendarWrapper: React.FC = () => {
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay',
                 }}
-                editable={viewType !== 'dayGridMonth'}
+                editable={calendarViewType !== 'dayGridMonth'}
                 selectable={true}
-                selectMirror={viewType !== 'dayGridMonth'}
+                selectMirror={calendarViewType !== 'dayGridMonth'}
                 dayMaxEvents={true}
                 weekends={true}
                 allDaySlot={false}

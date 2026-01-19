@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Staff } from '@/types';
 import { DataManagement } from './DataManagement';
-import { getWeeklyStats } from '@/lib/utils/calendarUtils';
+import { getWeeklyStats, getMonthlyStats } from '@/lib/utils/calendarUtils';
 
 export const StaffSidebar: React.FC = () => {
-    const { staff, shifts, currentViewDate, deleteStaff, getDeleteStaffCount, updateStaff, addStaff, selectedStaffId, setSelectedStaffId, setSelectedShiftId, setDeletingStaffId, clearAllSelections } = useStore();
+    const { staff, shifts, currentViewDate, calendarViewType, deleteStaff, getDeleteStaffCount, updateStaff, addStaff, selectedStaffId, setSelectedStaffId, setSelectedShiftId, setDeletingStaffId, clearAllSelections } = useStore();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -100,7 +100,11 @@ export const StaffSidebar: React.FC = () => {
                 </h2>
                 <ul data-testid="staff-list" className="space-y-2">
                     {staff.map((staffMember) => {
-                        const weeklyStats = getWeeklyStats(staffMember.id, shifts, currentViewDate);
+                        const isMonthView = calendarViewType === 'dayGridMonth';
+                        const stats = isMonthView
+                            ? getMonthlyStats(staffMember.id, shifts, currentViewDate)
+                            : getWeeklyStats(staffMember.id, shifts, currentViewDate);
+                        const periodLabel = isMonthView ? 'this month' : 'this week';
 
                         return (
                             <li
@@ -134,7 +138,7 @@ export const StaffSidebar: React.FC = () => {
                                                 {staffMember.name}
                                             </span>
                                             <span className="text-xs text-gray-500">
-                                                {weeklyStats.count} shift{weeklyStats.count !== 1 ? 's' : ''} · {weeklyStats.hours}h this week
+                                                {stats.count} shift{stats.count !== 1 ? 's' : ''} · {stats.hours}h {periodLabel}
                                             </span>
                                         </div>
                                     )}
@@ -197,18 +201,6 @@ export const StaffSidebar: React.FC = () => {
                         No staff members yet. Add one above to get started!
                     </p>
                 )}
-            </div>
-
-            {/* Buy Me a Coffee Widget */}
-            <div className="mt-4 pt-4 border-t border-gray-200 flex justify-center">
-                <a href="https://www.buymeacoffee.com/hangxi" target="_blank" rel="noopener noreferrer">
-                    <img
-                        src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-                        alt="Buy Me A Coffee"
-                        className="h-auto max-w-full"
-                        style={{ height: '50px', maxWidth: '180px' }}
-                    />
-                </a>
             </div>
 
             {/* Share & Export Section */}
